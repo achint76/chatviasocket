@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+app.use(express.json());
+
 const http = require('http').createServer(app);
 const PORT = process.env.PORT || 3002;
 const { MongoClient } = require('mongodb');
@@ -22,6 +24,7 @@ http.listen(PORT, ()=> {
 })
 app.use(express.static(__dirname + '/public'))
 app.get('/', (req, res) => {
+    console.log("START");
     res.sendFile(__dirname + '/index.html');
 })
 
@@ -30,8 +33,10 @@ app.get('/', (req, res) => {
 // })
 app.get('/messages', async (req, res) => {
     try {
+        console.log("GET");
         const messagesCollection = client.db('chatapp').collection('chatappdata');
         const messages = await messagesCollection.find({}).toArray();
+        console.log("AFTER GET");
         res.json(messages);
     } catch (err) {
         console.error('Error retrieving messages from the database', err);
@@ -41,6 +46,7 @@ app.get('/messages', async (req, res) => {
 
 app.post('/sendMessage', async(req, res)=> {
     try {
+        console.log("POST");
         const { sender_name, receiver_name, message } = req.body;
 
         // Save message to MongoDB
